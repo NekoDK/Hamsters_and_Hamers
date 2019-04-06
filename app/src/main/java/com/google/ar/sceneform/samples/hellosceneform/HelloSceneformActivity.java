@@ -26,15 +26,16 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.widget.Toast;
+
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.Random;
 import java.util.Timer;
@@ -58,8 +59,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
   private int maxY=3;
   private Node[][] arNodes = new  Node[maxX][maxY];
   private Timer timer;
+    private int randomX;
+    private int randomY;
 
-  @Override
+    @Override
   @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
   // CompletableFuture requires api level 24
   // FutureReturnValueIgnored is not valid
@@ -95,7 +98,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
               .exceptionally(
                       throwable -> {
                           Toast toast =
-                                  Toast.makeText(this, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                                  Toast.makeText(HelloSceneformActivity.this, "Unable to load andy renderable", Toast.LENGTH_LONG);
                           toast.setGravity(Gravity.CENTER, 0, 0);
                           toast.show();
                           return null;
@@ -124,11 +127,34 @@ public class HelloSceneformActivity extends AppCompatActivity {
                   kofSdviga = 0.12f * i;
                   for (int j = 0; j < maxY; j++) {
                       kofSdviga2 = 0.12f * j;
-                      Node andy2 = new Node();
-                      andy2.setWorldPosition(new Vector3(kofSdviga2, 0, kofSdviga));
-                      andy2.setParent(anchorNode);
-                      andy2.setRenderable(lunkaRenderable);
-                      arNodes[i][j]=andy2;
+                      Node node = new Node();
+                      node.setWorldPosition(new Vector3(kofSdviga2, 0, kofSdviga));
+                      node.setParent(anchorNode);
+                      node.setRenderable(lunkaRenderable);
+                      arNodes[i][j]=node;
+                      node.setName(i+";"+j);
+                      node.setOnTapListener(new Node.OnTapListener() {
+                          @Override
+                          public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+
+                              String name = hitTestResult.getNode().getName();
+                              Log.d("rerereere", name);
+                              String[] split = name.split(";");
+                              int currentX = Integer.parseInt(split[0]);
+                              int currentY = Integer.parseInt(split[1]);
+                              if(currentX==randomX && currentY==randomY){
+                                  Toast.makeText(HelloSceneformActivity.this,"ты попал",Toast.LENGTH_SHORT).show();
+                              }
+
+                          }
+                      });
+
+                      node.setOnTouchListener(new Node.OnTouchListener() {
+                          @Override
+                          public boolean onTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
+                              return false;
+                          }
+                      });
 
                   }
               }
@@ -172,14 +198,19 @@ public class HelloSceneformActivity extends AppCompatActivity {
       @Override
       public void run() {
 
+          Node nodePrev = arNodes[randomX][randomY];
+
           Random random = new Random();
-          int randomX=random.nextInt(maxX);
-          int randomY=random.nextInt(maxY);
-          Log.d("4343",randomX+" "+ randomY);
-          Node node = arNodes[randomX][randomY];
+          randomX =random.nextInt(maxX);
+          randomY =random.nextInt(maxY);
+          Log.d("4343", randomX +" "+ randomY);
+          Node nodeNext = arNodes[randomX][randomY];
           runOnUiThread(new Runnable() {
               @Override
-              public void run() { node.setRenderable(hamsterRenderable);
+              public void run() {
+                  nodePrev.setRenderable(lunkaRenderable);
+                  nodeNext.setRenderable(hamsterRenderable);
+                  nodeNext.setName(randomX+";"+randomY);
               }
           });
 

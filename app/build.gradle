@@ -71,3 +71,8 @@ sceneform.asset('sampledata/models/hamster_lunka.obj',
         'default',
         'sampledata/models/hamster_lunka.sfa',
         'src/main/res/raw/hamster_lunka')
+
+sceneform.asset('sampledata/models/hamster_lunka_two.obj',
+        'default',
+        'sampledata/models/hamster_lunka_two.sfa',
+        'src/main/res/raw/hamster_lunka_two')
