@@ -18,6 +18,7 @@ package com.google.ar.sceneform.samples.hellosceneform;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.ar.core.Anchor;
@@ -49,8 +51,11 @@ public class HelloSceneformActivity extends AppCompatActivity {
   private static final double MIN_OPENGL_VERSION = 3.0;
 
   private ArFragment arFragment;
+  private TextView counterEl;
   private ModelRenderable lunkaRenderable;
   private ModelRenderable hamsterRenderable;
+  private ModelRenderable hamsterRenderableSchischk;
+  private int counter=0;
   private float kofSdviga=0;
   private float kofSdviga2=0;
   private int pointCounter=0;
@@ -73,7 +78,13 @@ public class HelloSceneformActivity extends AppCompatActivity {
       return;
     }
 
+    Intent intent = getIntent();
+    maxX=intent.getIntExtra("MaxX",3);
+    maxY=intent.getIntExtra("MaxY",3);
+
+
     setContentView(R.layout.activity_ux);
+    counterEl = findViewById(R.id.Counter);
     arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 
     // When you build a Renderable, Sceneform loads its resources in the background while returning
@@ -92,7 +103,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
             });
 
       ModelRenderable.builder()
-              .setSource(this, R.raw.hamster_lunka)
+              .setSource(this, R.raw.hamster_lunka_two)
               .build()
               .thenAccept(renderable -> hamsterRenderable = renderable)
               .exceptionally(
@@ -103,6 +114,19 @@ public class HelloSceneformActivity extends AppCompatActivity {
                           toast.show();
                           return null;
                       });
+
+        ModelRenderable.builder()
+                .setSource(this, R.raw.hamster_lunka_schischk)
+                .build()
+                .thenAccept(renderable -> hamsterRenderableSchischk = renderable)
+                .exceptionally(
+                        throwable -> {
+                            Toast toast =
+                                    Toast.makeText(HelloSceneformActivity.this, "Unable to load andy renderable", Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER, 0, 0);
+                            toast.show();
+                            return null;
+                        });
 
     arFragment.setOnTapArPlaneListener(
         (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
@@ -136,16 +160,19 @@ public class HelloSceneformActivity extends AppCompatActivity {
                       node.setOnTapListener(new Node.OnTapListener() {
                           @Override
                           public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-
-                              String name = hitTestResult.getNode().getName();
-                              Log.d("rerereere", name);
-                              String[] split = name.split(";");
-                              int currentX = Integer.parseInt(split[0]);
-                              int currentY = Integer.parseInt(split[1]);
-                              if(currentX==randomX && currentY==randomY){
-                                  Toast.makeText(HelloSceneformActivity.this,"ты попал",Toast.LENGTH_SHORT).show();
+                              Node nodeTapped = hitTestResult.getNode();
+                              if(nodeTapped != null) {
+                                  String name = nodeTapped.getName();
+                                  Log.d("rerereere", name);
+                                  String[] split = name.split(";");
+                                  int currentX = Integer.parseInt(split[0]);
+                                  int currentY = Integer.parseInt(split[1]);
+                                  if (currentX == randomX && currentY == randomY) {
+                                      Toast.makeText(HelloSceneformActivity.this, "ты попал", Toast.LENGTH_SHORT).show();
+                                      counter++;
+                                      counterEl.setText("Хомяков поймано" + " " + counter);
+                                  }
                               }
-
                           }
                       });
 
@@ -224,5 +251,12 @@ public class HelloSceneformActivity extends AppCompatActivity {
             timer.cancel();
         }
         isTapArPlane = false;
+
     }
-}
+
+    }
+
+
+
+
+
