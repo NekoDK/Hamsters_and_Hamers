@@ -17,6 +17,9 @@ public class MenuActivity extends AppCompatActivity {
 
     public void openGrandMasterGame(View view){
         Intent intent = new Intent(this, HelloSceneformActivity.class);
+        intent.putExtra("MaxZ",2);
+        intent.putExtra("Period",2000);
+        intent.putExtra("Delay",2000);
         startActivity(intent);
     }
     public void openHardGame (View view){
@@ -34,7 +37,8 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void openSetting (View view){
-
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
     public void Finish (View view){
         finish();

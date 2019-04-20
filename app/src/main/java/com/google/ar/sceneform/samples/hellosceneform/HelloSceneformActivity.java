@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -49,23 +50,30 @@ import java.util.TimerTask;
 public class HelloSceneformActivity extends AppCompatActivity {
   private static final String TAG = HelloSceneformActivity.class.getSimpleName();
   private static final double MIN_OPENGL_VERSION = 3.0;
-
   private ArFragment arFragment;
   private TextView counterEl;
   private ModelRenderable lunkaRenderable;
   private ModelRenderable hamsterRenderable;
   private ModelRenderable hamsterRenderableSchischk;
-  private int counter=0;
+  private float counter=0;
   private float kofSdviga=0;
   private float kofSdviga2=0;
+  private float kofSdviga3=0;
   private int pointCounter=0;
   private boolean isTapArPlane= false;
   private int maxX=3;
   private int maxY=3;
+  private int maxZ=0;
   private Node[][] arNodes = new  Node[maxX][maxY];
   private Timer timer;
     private int randomX;
     private int randomY;
+    private int randomZ;
+    private float Accuracy;
+    private int delay=1000;
+    private int period=1000;
+    private float counterOfTap;
+
 
     @Override
   @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -77,15 +85,17 @@ public class HelloSceneformActivity extends AppCompatActivity {
     if (!checkIsSupportedDeviceOrFinish(this)) {
       return;
     }
-
+    Vibrator vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     Intent intent = getIntent();
     maxX=intent.getIntExtra("MaxX",3);
     maxY=intent.getIntExtra("MaxY",3);
-
+    delay=intent.getIntExtra("Delay",1000);
+    period=intent.getIntExtra("Period",1000);
 
     setContentView(R.layout.activity_ux);
-    counterEl = findViewById(R.id.Counter);
-    arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
+    TextView counterEl = findViewById(R.id.Counter);
+    TextView accuracy = findViewById(R.id.Accuraсy);
+        arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
 
     // When you build a Renderable, Sceneform loads its resources in the background while returning
     // a CompletableFuture. Call thenAccept(), handle(), or check isDone() before calling get().
@@ -152,7 +162,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
                   for (int j = 0; j < maxY; j++) {
                       kofSdviga2 = 0.12f * j;
                       Node node = new Node();
-                      node.setWorldPosition(new Vector3(kofSdviga2, 0, kofSdviga));
+                      node.setWorldPosition(new Vector3(kofSdviga2, kofSdviga3, kofSdviga));
                       node.setParent(anchorNode);
                       node.setRenderable(lunkaRenderable);
                       arNodes[i][j]=node;
@@ -161,7 +171,11 @@ public class HelloSceneformActivity extends AppCompatActivity {
                           @Override
                           public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
                               Node nodeTapped = hitTestResult.getNode();
+                              counterOfTap++;
+
                               if(nodeTapped != null) {
+                                  Accuracy=(counter/counterOfTap)*100;
+                                  accuracy.setText("Процент попаданий"+" "+Accuracy+"%");
                                   String name = nodeTapped.getName();
                                   Log.d("rerereere", name);
                                   String[] split = name.split(";");
@@ -170,7 +184,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
                                   if (currentX == randomX && currentY == randomY) {
                                       Toast.makeText(HelloSceneformActivity.this, "ты попал", Toast.LENGTH_SHORT).show();
                                       counter++;
-                                      counterEl.setText("Хомяков поймано" + " " + counter);
+
+                                     vibrate.vibrate(50);
+                                     counterEl.setText("Хомяков поймано" + " " + counter);
+
                                   }
                               }
                           }
@@ -183,10 +200,11 @@ public class HelloSceneformActivity extends AppCompatActivity {
                           }
                       });
 
-                  }
+
+              }
               }
              timer = new Timer();
-              timer.schedule(new MyTimerTask(), 1000,1000);
+              timer.schedule(new MyTimerTask(), delay,period);
         });
   }
 
