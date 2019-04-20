@@ -84,3 +84,9 @@ sceneform.asset('sampledata/models/hamster_lunka_schischk.obj',
         'default',
         'sampledata/models/hamster_lunka_schischk.sfa',
         'src/main/res/raw/hamster_lunka_schischk')
+
+
+sceneform.asset('sampledata/models/karandasch.obj',
+        'default',
+        'sampledata/models/karandasch.sfa',
+        'src/main/res/raw/karandasch')

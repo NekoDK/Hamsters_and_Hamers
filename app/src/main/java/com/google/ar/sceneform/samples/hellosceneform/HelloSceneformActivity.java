@@ -19,6 +19,8 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -73,6 +75,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
     private int delay=1000;
     private int period=1000;
     private float counterOfTap;
+    MediaPlayer mediaPlayer;
+    private SharedPreferences sharedPreferences;
+    private boolean vibrateSwitchIsChecked;
+    private Vibrator vibrate;
 
 
     @Override
@@ -85,14 +91,27 @@ public class HelloSceneformActivity extends AppCompatActivity {
     if (!checkIsSupportedDeviceOrFinish(this)) {
       return;
     }
-    Vibrator vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    setContentView(R.layout.activity_ux);
+
+    sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+    boolean musicSwitchIsChecked = sharedPreferences.getBoolean("musicSwitchIsChecked", true);
+    if(musicSwitchIsChecked){
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.game);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+    }
+
+    vibrateSwitchIsChecked = sharedPreferences.getBoolean("vibrateSwitchIsChecked", true);
+    if(vibrateSwitchIsChecked) {
+        vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+    }
     Intent intent = getIntent();
     maxX=intent.getIntExtra("MaxX",3);
     maxY=intent.getIntExtra("MaxY",3);
     delay=intent.getIntExtra("Delay",1000);
     period=intent.getIntExtra("Period",1000);
 
-    setContentView(R.layout.activity_ux);
+
     TextView counterEl = findViewById(R.id.Counter);
     TextView accuracy = findViewById(R.id.Accuraсy);
         arFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.ux_fragment);
@@ -184,8 +203,9 @@ public class HelloSceneformActivity extends AppCompatActivity {
                                   if (currentX == randomX && currentY == randomY) {
                                       Toast.makeText(HelloSceneformActivity.this, "ты попал", Toast.LENGTH_SHORT).show();
                                       counter++;
-
-                                     vibrate.vibrate(50);
+                                      if(vibrateSwitchIsChecked) {
+                                          vibrate.vibrate(50);
+                                      }
                                      counterEl.setText("Хомяков поймано" + " " + counter);
 
                                   }
@@ -269,7 +289,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
             timer.cancel();
         }
         isTapArPlane = false;
-
+        if(mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 
     }
