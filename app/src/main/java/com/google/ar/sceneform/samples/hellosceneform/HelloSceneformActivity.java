@@ -20,7 +20,9 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -78,7 +80,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     private SharedPreferences sharedPreferences;
     private boolean vibrateSwitchIsChecked;
+    private boolean soundSwitchChecked;
     private Vibrator vibrate;
+    private SoundPool sound;
+    int touch;
 
 
     @Override
@@ -98,6 +103,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
     if(musicSwitchIsChecked){
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.game);
         mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(0.2f,0.2f);
         mediaPlayer.start();
     }
 
@@ -105,11 +111,20 @@ public class HelloSceneformActivity extends AppCompatActivity {
     if(vibrateSwitchIsChecked) {
         vibrate = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
     }
+
+    soundSwitchChecked=sharedPreferences.getBoolean("soundSwitchIsChecked",true);
+    if (soundSwitchChecked){
+        sound = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        touch=sound.load(this,R.raw.kick,1);
+    }
+
     Intent intent = getIntent();
     maxX=intent.getIntExtra("MaxX",3);
     maxY=intent.getIntExtra("MaxY",3);
     delay=intent.getIntExtra("Delay",1000);
     period=intent.getIntExtra("Period",1000);
+
+
 
 
     TextView counterEl = findViewById(R.id.Counter);
@@ -145,7 +160,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
                       });
 
         ModelRenderable.builder()
-                .setSource(this, R.raw.hamster_lunka_schischk)
+                .setSource(this, R.raw.pencil_erste)
                 .build()
                 .thenAccept(renderable -> hamsterRenderableSchischk = renderable)
                 .exceptionally(
@@ -201,10 +216,14 @@ public class HelloSceneformActivity extends AppCompatActivity {
                                   int currentX = Integer.parseInt(split[0]);
                                   int currentY = Integer.parseInt(split[1]);
                                   if (currentX == randomX && currentY == randomY) {
+                                      node.setRenderable(hamsterRenderableSchischk);
                                       Toast.makeText(HelloSceneformActivity.this, "ты попал", Toast.LENGTH_SHORT).show();
                                       counter++;
                                       if(vibrateSwitchIsChecked) {
                                           vibrate.vibrate(50);
+                                      }
+                                      if (soundSwitchChecked){
+                                          sound.play(touch,1,1,0,0,1);
                                       }
                                      counterEl.setText("Хомяков поймано" + " " + counter);
 
