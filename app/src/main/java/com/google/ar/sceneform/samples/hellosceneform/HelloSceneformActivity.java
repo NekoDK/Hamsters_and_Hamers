@@ -67,12 +67,10 @@ public class HelloSceneformActivity extends AppCompatActivity {
   private boolean isTapArPlane= false;
   private int maxX=3;
   private int maxY=3;
-  private int maxZ=0;
   private Node[][] arNodes = new  Node[maxX][maxY];
   private Timer timer;
     private int randomX;
     private int randomY;
-    private int randomZ;
     private float Accuracy;
     private int delay=1000;
     private int period=1000;
@@ -103,7 +101,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
     if(musicSwitchIsChecked){
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.game);
         mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(0.2f,0.2f);
+        mediaPlayer.setVolume(0.3f,0.3f);
         mediaPlayer.start();
     }
 
@@ -115,7 +113,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
     soundSwitchChecked=sharedPreferences.getBoolean("soundSwitchIsChecked",true);
     if (soundSwitchChecked){
         sound = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        touch=sound.load(this,R.raw.kick,1);
+        touch=sound.load(this,R.raw.kick10,1);
     }
 
     Intent intent = getIntent();
@@ -223,7 +221,7 @@ public class HelloSceneformActivity extends AppCompatActivity {
                                           vibrate.vibrate(50);
                                       }
                                       if (soundSwitchChecked){
-                                          sound.play(touch,1,1,0,0,1);
+                                          sound.play(touch,0.4f,0.4f,0,0,1);
                                       }
                                      counterEl.setText("Хомяков поймано" + " " + counter);
 

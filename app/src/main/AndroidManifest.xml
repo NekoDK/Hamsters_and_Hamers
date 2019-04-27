@@ -20,9 +20,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".GrandMasterActivity"></activity>
+        <activity android:name=".HardActivity" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <!--
              This tag indicates that this application requires ARCore. This results in the
             application only being visible in the Google Play Store on devices that support

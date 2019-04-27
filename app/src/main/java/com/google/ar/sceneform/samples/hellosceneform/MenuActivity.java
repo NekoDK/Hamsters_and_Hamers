@@ -16,14 +16,14 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void openGrandMasterGame(View view){
-        Intent intent = new Intent(this, HelloSceneformActivity.class);
+        Intent intent = new Intent(this, GrandMasterActivity.class);
         intent.putExtra("MaxZ",2);
         intent.putExtra("Period",2000);
         intent.putExtra("Delay",2000);
         startActivity(intent);
     }
     public void openHardGame (View view){
-        Intent intent = new Intent(this, HelloSceneformActivity.class);
+        Intent intent = new Intent(this, HardActivity.class);
         startActivity(intent);
     }
     public void openMediumGame (View view){
